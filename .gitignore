@@ -2,3 +2,6 @@ pkg
 doc
 templates
 agiledox.txt
+*.swp
+.swo
+tags
