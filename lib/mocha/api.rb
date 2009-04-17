@@ -150,9 +150,13 @@ module Mocha # :nodoc:
     end
     
     def assert_received(mock, expected_method_name)
+      mock = mock.mocha if mock.respond_to?(:mocha)
       expectation = Expectation.new(mock, expected_method_name)
       yield(expectation) if block_given?
-      assert_not_nil Mockery.instance.invocations.detect {|invocation|
+      mock_invocations = Mockery.instance.invocations.select {|invocation|
+        invocation.mock.equal?(mock)
+      }
+      assert_not_nil mock_invocations.detect {|invocation|
         expectation.match?(invocation.method_name, *invocation.arguments)
       }
     end
