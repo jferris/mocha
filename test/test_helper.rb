@@ -13,3 +13,4 @@ if ENV['MOCHA_OPTIONS'] == 'use_test_unit_gem'
 end
 
 require 'test/unit'
+

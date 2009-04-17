@@ -150,17 +150,57 @@ module Mocha # :nodoc:
     end
     
     def assert_received(mock, expected_method_name)
-      mock = mock.mocha if mock.respond_to?(:mocha)
-      expectation = Expectation.new(mock, expected_method_name)
-      yield(expectation) if block_given?
-      mock_invocations = Mockery.instance.invocations.select {|invocation|
-        invocation.mock.equal?(mock)
-      }
-      invocation_count = mock_invocations.select {|invocation|
-        expectation.match?(invocation.method_name, *invocation.arguments)
-      }.size
-      expectation.invocation_count = invocation_count
-      assert expectation.satisfied?
+      matcher = have_received(expected_method_name)
+      yield(matcher) if block_given?
+      assert matcher.matches?(mock)
+    end
+
+    class HaveReceived
+      def initialize(expected_method_name)
+        @expectation = Expectation.new(nil, expected_method_name)
+      end
+
+      def method_missing(method, *args, &block)
+        @expectation.send(method, *args, &block)
+        self
+      end
+
+      def matches?(mock)
+        if mock.respond_to?(:mocha)
+          @mock = mock.mocha
+        else
+          mock = @mock
+        end
+
+        @expectation.invocation_count = invocation_count
+        @expectation.satisfied?
+      end
+      
+      def failure_message
+        ''
+      end
+
+      private
+
+      def invocation_count
+        matching_invocations.size
+      end
+
+      def matching_invocations
+        invocations.select do |invocation|
+          @expectation.match?(invocation.method_name, *invocation.arguments)
+        end
+      end
+
+      def invocations
+        Mockery.instance.invocations.select do |invocation|
+          invocation.mock.equal?(@mock)
+        end
+      end
+    end
+
+    def have_received(expected_method_name)
+      HaveReceived.new(expected_method_name)
     end
 
     def mocha_setup # :nodoc:
