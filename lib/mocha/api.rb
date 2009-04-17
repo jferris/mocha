@@ -152,16 +152,17 @@ module Mocha # :nodoc:
     def assert_received(mock, expected_method_name)
       matcher = have_received(expected_method_name)
       yield(matcher) if block_given?
-      assert matcher.matches?(mock)
+      assert matcher.matches?(mock), matcher.failure_message
     end
 
-    class HaveReceived
+    class HaveReceived #:nodoc:
       def initialize(expected_method_name)
-        @expectation = Expectation.new(nil, expected_method_name)
+        @expected_method_name = expected_method_name
+        @expectations = []
       end
 
       def method_missing(method, *args, &block)
-        @expectation.send(method, *args, &block)
+        @expectations << [method, args, block]
         self
       end
 
@@ -172,12 +173,16 @@ module Mocha # :nodoc:
           mock = @mock
         end
 
+        @expectation = Expectation.new(@mock, @expected_method_name)
+        @expectations.each do |method, args, block|
+          @expectation.send(method, *args, &block)
+        end
         @expectation.invocation_count = invocation_count
         @expectation.satisfied?
       end
       
       def failure_message
-        ''
+        @expectation.mocha_inspect
       end
 
       private
