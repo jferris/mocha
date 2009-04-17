@@ -435,8 +435,9 @@ module Mocha # :nodoc:
       @cardinality.satisfied?(@invocation_count)
     end
   
-    def invoke
+    def invoke(args)
       @invocation_count += 1
+      Mockery.instance.invocation(@mock, method_name, args)
       perform_side_effects()
       if block_given? then
         @yield_parameters.next_invocation.each do |yield_parameters|
@@ -471,6 +472,12 @@ module Mocha # :nodoc:
     
     def method_signature
       "#{@mock.mocha_inspect}.#{@method_matcher.mocha_inspect}#{@parameters_matcher.mocha_inspect}"
+    end
+
+    private
+
+    def method_name
+      @method_matcher.expected_method_name
     end
       
     # :startdoc:

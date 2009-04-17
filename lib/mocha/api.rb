@@ -149,6 +149,13 @@ module Mocha # :nodoc:
       Mockery.instance.new_state_machine(name)
     end
     
+    def assert_received(mock, expected_method_name)
+      expectation = Expectation.new(mock, expected_method_name)
+      assert_not_nil Mockery.instance.invocations.detect {|invocation|
+        expectation.match?(invocation.method_name, [])
+      }
+    end
+
     def mocha_setup # :nodoc:
     end
     

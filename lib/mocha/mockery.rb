@@ -5,6 +5,7 @@ require 'mocha/state_machine'
 require 'mocha/logger'
 require 'mocha/configuration'
 require 'mocha/stubbing_error'
+require 'mocha/invocation'
 
 module Mocha
   
@@ -40,6 +41,10 @@ module Mocha
     
     def new_state_machine(name)
       add_state_machine(StateMachine.new(name))
+    end
+
+    def invocation(mock, method_name, args)
+      invocations << Invocation.new(mock, method_name, args)
     end
     
     def verify(assertion_counter = nil)
@@ -77,7 +82,7 @@ module Mocha
     def state_machines
       @state_machines ||= []
     end
-    
+
     def mocha_inspect
       message = ""
       message << "unsatisfied expectations:\n- #{unsatisfied_expectations.map { |e| e.mocha_inspect }.join("\n- ")}\n" unless unsatisfied_expectations.empty?
@@ -144,7 +149,10 @@ module Mocha
     def logger
       @logger ||= Logger.new($stderr)
     end
-    
+
+    def invocations
+      @invocations ||= []
+    end
     
     private
     
