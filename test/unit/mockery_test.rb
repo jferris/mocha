@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__), "..", "test_helper")
 require 'mocha/mockery'
 require 'mocha/state_machine'
+require 'mocha/invocation'
 
 class MockeryTest < Test::Unit::TestCase
   
@@ -144,6 +145,19 @@ class MockeryTest < Test::Unit::TestCase
     mockery = Mockery.new
     mock = mockery.mock_impersonating_any_instance_of(FakeClass)
     assert_equal "#<AnyInstance:MockeryTest::FakeClass>", mock.inspect
+  end
+
+  def test_should_record_invocation
+    mock   = 'a mock'
+    method = :call_me
+    args   = [1, 2]
+    mockery = Mockery.new
+    mockery.invocation(mock, method, args)
+    assert_equal 1, mockery.invocations.size
+    invocation = mockery.invocations.first
+    assert_equal mock, invocation.mock
+    assert_equal method, invocation.method_name
+    assert_equal args, invocation.arguments
   end
   
 end
