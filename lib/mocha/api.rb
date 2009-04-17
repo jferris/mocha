@@ -149,6 +149,13 @@ module Mocha # :nodoc:
       Mockery.instance.new_state_machine(name)
     end
     
+    # Asserts that the given mock received the given method.
+    #
+    # Examples:
+    #
+    #   assert_received(mock, :to_s)
+    #   assert_received(Radio, :new) {|expect| expect.with(1041) }
+    #   assert_received(radio, :volume) {|expect| expect.with(11).twice }
     def assert_received(mock, expected_method_name)
       matcher = have_received(expected_method_name)
       yield(matcher) if block_given?
@@ -204,6 +211,16 @@ module Mocha # :nodoc:
       end
     end
 
+    # :call-seq:
+    #   should have_received(method).with(arguments).times(times)
+    #
+    # Ensures that the given mock received the given method.
+    #
+    # Examples:
+    #
+    #   mock.should have_received(:to_s)
+    #   Radio.should have_received(:new).with(1041)
+    #   radio.should have_received(:volume).with(11).twice
     def have_received(expected_method_name)
       HaveReceived.new(expected_method_name)
     end
