@@ -513,5 +513,14 @@ class ExpectationTest < Test::Unit::TestCase
     assert_equal args, invocation[:args], "Got: #{invocation.inspect}"
     assert_equal mock, invocation[:mock], "Got: #{invocation.inspect}"
   end
+
+  def test_should_expose_invocation_count
+    expectation = Expectation.new(nil, :a_method)
+    assert_equal 0, expectation.invocation_count
+    expectation.invoke(1)
+    assert_equal 1, expectation.invocation_count
+    expectation.invocation_count = 3
+    assert_equal 3, expectation.invocation_count
+  end
   
 end
