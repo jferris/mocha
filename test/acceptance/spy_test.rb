@@ -82,4 +82,16 @@ class SpyTest < Test::Unit::TestCase
     assert_passed(test_result)
   end
 
+  def test_should_reject_call_on_different_mock
+    instance = Object.new
+    other    = Object.new
+    test_result = run_as_test do
+      instance.stubs(:to_s)
+      other.stubs(:to_s)
+      other.to_s('hello')
+      assert_received(instance, :to_s) {|expect| expect.with(is_a(String)) }
+    end
+    assert_failed(test_result)
+  end
+
 end
