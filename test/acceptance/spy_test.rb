@@ -94,4 +94,24 @@ class SpyTest < Test::Unit::TestCase
     assert_failed(test_result)
   end
 
+  def test_should_accept_correct_number_of_calls
+    instance = Object.new
+    test_result = run_as_test do
+      instance.stubs(:to_s)
+      2.times { instance.to_s }
+      assert_received(instance, :to_s) {|expect| expect.twice }
+    end
+    assert_passed(test_result)
+  end
+
+  def test_should_reject_incorrect_number_of_calls
+    instance = Object.new
+    test_result = run_as_test do
+      instance.stubs(:to_s)
+      instance.to_s
+      assert_received(instance, :to_s) {|expect| expect.twice }
+    end
+    assert_failed(test_result)
+  end
+
 end

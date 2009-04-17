@@ -386,6 +386,7 @@ module Mocha # :nodoc:
     # :stopdoc:
     
     attr_reader :backtrace
+    attr_accessor :invocation_count
 
     def initialize(mock, expected_method_name, backtrace = nil)
       @mock = mock

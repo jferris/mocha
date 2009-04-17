@@ -156,9 +156,11 @@ module Mocha # :nodoc:
       mock_invocations = Mockery.instance.invocations.select {|invocation|
         invocation.mock.equal?(mock)
       }
-      assert_not_nil mock_invocations.detect {|invocation|
+      invocation_count = mock_invocations.select {|invocation|
         expectation.match?(invocation.method_name, *invocation.arguments)
-      }
+      }.size
+      expectation.invocation_count = invocation_count
+      assert expectation.satisfied?
     end
 
     def mocha_setup # :nodoc:
