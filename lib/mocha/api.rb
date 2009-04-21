@@ -177,7 +177,7 @@ module Mocha # :nodoc:
         if mock.respond_to?(:mocha)
           @mock = mock.mocha
         else
-          mock = @mock
+          @mock = mock
         end
 
         @expectation = Expectation.new(@mock, @expected_method_name)
