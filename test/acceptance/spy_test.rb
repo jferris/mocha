@@ -85,13 +85,22 @@ module SpyTestMethods
     assert_matcher_accepts have_received(:to_s).twice, instance
   end
 
-  def test_should_reject_incorrect_number_of_calls
+  def test_should_reject_not_enough_calls
     instance = new_instance
     instance.stubs(:to_s)
     instance.to_s
     message = /expected exactly twice/
     assert_fails(message) { assert_received(instance, :to_s) {|expect| expect.twice } }
     assert_fails(message) { assert_matcher_accepts have_received(:to_s).twice, instance }
+  end
+
+  def test_should_reject_too_many_calls
+    instance = new_instance
+    instance.stubs(:to_s)
+    2.times { instance.to_s }
+    message = /expected exactly once/
+    assert_fails(message) { assert_received(instance, :to_s) {|expect| expect.once } }
+    assert_fails(message) { assert_matcher_accepts have_received(:to_s).once, instance }
   end
 
   def assert_fails(message=/not yet invoked/)
