@@ -185,7 +185,7 @@ module Mocha # :nodoc:
           @expectation.send(method, *args, &block)
         end
         @expectation.invocation_count = invocation_count
-        @expectation.satisfied?
+        @expectation.verified?
       end
       
       def failure_message

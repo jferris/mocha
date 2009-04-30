@@ -101,6 +101,24 @@ module HaveReceivedTestMethods
     end
   end
 
+  def test_fails_if_invocation_count_too_low
+    method = :a_method
+    mock   = new_mock('a mock')
+    Mockery.instance.invocation(mock, method, [])
+    assert_fails do
+      assert_matcher_accepts have_received(method).twice, mock
+    end
+  end
+
+  def test_fails_if_invocation_count_too_high
+    method = :a_method
+    mock   = new_mock('a mock')
+    2.times { Mockery.instance.invocation(mock, method, []) }
+    assert_fails do
+      assert_matcher_accepts have_received(method).once, mock
+    end
+  end
+
   def assert_passes(&block)
     assert ! fails?(&block)
   end

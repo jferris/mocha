@@ -107,12 +107,21 @@ class AssertReceivedTest < Test::Unit::TestCase
     end
   end
 
-  def test_fails_if_invocation_count_incorrect
+  def test_fails_if_invocation_count_too_low
     method = :a_method
     mock   = FakeMock.new('a mock')
     Mockery.instance.invocation(mock, method, [])
     assert_fails do
       assert_received(mock, method) {|expect| expect.twice }
+    end
+  end
+
+  def test_fails_if_invocation_count_too_high
+    method = :a_method
+    mock   = FakeMock.new('a mock')
+    2.times { Mockery.instance.invocation(mock, method, []) }
+    assert_fails do
+      assert_received(mock, method) {|expect| expect.once }
     end
   end
 
